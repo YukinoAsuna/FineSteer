@@ -1,0 +1,7 @@
+transformers==4.44.2
+datasets==2.21.0
+accelerate==0.33.0
+openai==1.52.2
+torchdiffeq==0.2.4
+ema-pytorch
+bleurt-pytorch
