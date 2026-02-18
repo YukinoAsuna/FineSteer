@@ -279,12 +279,12 @@ class RectifiedFlow(Module):
 
         # data = self.data_normalize_fn(data)
 
-        self.data_shape = default(self.data_shape, data_shape)
+        self.data_shape = default(self.data_shape, data_shape)# (3584,) 
 
         # x0 - y_lose, x1 - y_win
 
-        x_0 = y_lose
-        x_1 = y_win
+        x_0 = y_lose# question的hidden_state
+        x_1 = y_win# y_win: 正确答案的hidden_state- 不正确的hidden_state
         # noise = default(noise, torch.randn_like(data))
 
         #! no immiscible flow
@@ -296,8 +296,8 @@ class RectifiedFlow(Module):
 
         # times, and times with dimension padding on right
 
-        times = torch.rand(batch, device = self.device)
-        padded_times = append_dims(times, x_1.ndim - 1)
+        times = torch.rand(batch, device = self.device)#[136] 136是batch
+        padded_times = append_dims(times, x_1.ndim - 1)#[136,1]
 
         # time needs to be from [0, 1 - delta_time] if using consistency loss
 
@@ -308,12 +308,12 @@ class RectifiedFlow(Module):
 
             # maybe noise schedule
 
-            t = self.noise_schedule(t)
+            t = self.noise_schedule(t)#[136,1]
 
             # Algorithm 2 in paper
             # linear interpolation of noise with data using random times
             # x1 * t + x0 * (1 - t) - so from noise (time = 0) to data (time = 1.)
-
+            #x_0: question的hidden_state.... x_1 正确答案的hidden_state- 不正确的hidden_state
             interp = t * x_1 + (1. - t) * x_0
 
             # the model predicts the flow from the noised data
@@ -329,7 +329,7 @@ class RectifiedFlow(Module):
             return model_output, flow, pred_flow, pred_data
 
         # getting flow and pred flow for main model
-
+        #这个flow本质是就是学习到了如何将prompt embedding，直接映射到差值。
         output, flow, pred_flow, pred_data = get_noised_and_flows(self.model, padded_times)
 
         # if using consistency loss, also need the ema model predicted flow
@@ -341,7 +341,7 @@ class RectifiedFlow(Module):
         # determine target, depending on objective
 
         if self.predict == 'flow':
-            target = flow
+            target = flow#这个flow是x_1 减去x_0
         elif self.predict == 'noise':
             target = noise
         else:

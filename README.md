@@ -33,7 +33,9 @@ python create_ds.py --model_name gemma-2 --layers 18 20 22 --test_size 0.5 --see
 
 After collecting training data, the TruthFlow is ready to train and test. The following command will run the training and evaluation process.
 ```bash
-python flow.py --model_name gemma-2 --ds_path data_tqa/gemma-2_ans_avg_seed0_testsize0.5_layers18_20_22 --layers 20 --seed 0 --use_flow --opengen_eval --eval_method gpt --k 20 --alpha 1.5 --train --num_epochs 40
+python flow.py --model_name gemma-2 --ds_path ./data_tqa/gemma-2_ans_avg_seed0_testsize0.5_layers_18_20_22 --layers 20 --seed 0 --method truthflow --opengen_eval --eval_method gpt --k 20 --alpha 1.5 --train --num_epochs 40
+
+python flow.py --model_name gemma-2 --ds_path ./data_tqa/gemma-2_ans_avg_seed0_testsize0.5_layers_18_20_22 --layers 20 --seed 0 --method alphasteer --opengen_eval --eval_method gpt --k 20 --alpha 1.5 --train --num_epochs 40
 ```
 ### Explanation of the command
 * ``--model_name`` Specifies the model.

@@ -4,7 +4,13 @@ from typing import List
 import torch
 from openai import OpenAI
 from typing import Union
-
+import requests
+import json
+url = "https://gpt-api.hkust-gz.edu.cn/v1/chat/completions"
+headers = { 
+    "Content-Type": "application/json", 
+    "Authorization": "bb9fe36222cd4d51848afecea0406494da97cdaf37154d8488bd9b27f8b8a178" #Please change your KEY. If your key is XXX, the Authorization is "Authorization": "Bearer XXX"
+    }
 OPENAI_API_KEY = "openai api key"
 
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -89,21 +95,40 @@ def halueval_info_prompt_template2(question, model_answers):
 #! ======================== Evaluation Functions ========================
 # HaluEval
 def halueval_gpt_eval_true2(question, knowledge, correct_answer, incorrect_answer, model_answers):
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": halueval_true_prompt_template2(question, knowledge, correct_answer, incorrect_answer, model_answers)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": halueval_true_prompt_template2(question, knowledge, correct_answer, incorrect_answer, model_answers)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     res = ans.split("\n")
     true_score = []
     if len(res) != 3:
@@ -122,21 +147,33 @@ def halueval_gpt_eval_true2(question, knowledge, correct_answer, incorrect_answe
     return true_score
     
 def halueval_gpt_eval_info2(question, model_answers):
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": halueval_info_prompt_template2(question, model_answers)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+   
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+        
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     res = ans.split("\n")
     true_score = []
     if len(res) != 3:
@@ -157,21 +194,38 @@ def halueval_gpt_eval_info2(question, model_answers):
 # TQA
 def tqa_gpt_eval_true(question, correct_answer, incorrect_answer, model_answer):
     # true score
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": tqa_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": tqa_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     if "yes" in ans.lower():
         true_score = 1
     elif "no" in ans.lower():
@@ -185,21 +239,40 @@ def tqa_gpt_eval_true(question, correct_answer, incorrect_answer, model_answer):
     return true_score   
 
 def tqa_gpt_eval_info(question, model_answer):
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": info_prompt_template(question, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": info_prompt_template(question, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     
     if "yes" in ans.lower():
         info_score = 1
@@ -216,21 +289,40 @@ def tqa_gpt_eval_info(question, model_answer):
 
 def halueval_gpt_eval_true(question, knowledge, correct_answer, incorrect_answer, model_answer):
     # true score
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": halueval_true_prompt_template(question, knowledge, correct_answer, incorrect_answer, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": halueval_true_prompt_template(question, knowledge, correct_answer, incorrect_answer, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     if "yes" in ans.lower():
         true_score = 1
     elif "no" in ans.lower():
@@ -244,21 +336,40 @@ def halueval_gpt_eval_true(question, knowledge, correct_answer, incorrect_answer
 
 def nq_gpt_eval_true(question, correct_answer, incorrect_answer, model_answer):
     # true score
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": nq_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": nq_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     if "yes" in ans.lower():
         true_score = 1
     elif "no" in ans.lower():
@@ -270,21 +381,41 @@ def nq_gpt_eval_true(question, correct_answer, incorrect_answer, model_answer):
     return true_score   
 
 def triviaqa_gpt_eval_true(question, correct_answer, incorrect_answer, model_answer):
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": triviaqa_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": triviaqa_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     if "yes" in ans.lower():
         true_score = 1
     elif "no" in ans.lower():
@@ -296,21 +427,42 @@ def triviaqa_gpt_eval_true(question, correct_answer, incorrect_answer, model_ans
     return true_score   
 
 def tqa_mini_eval_true(question, correct_answer, incorrect_answer, model_answer):
-    completion = client.chat.completions.create(
-        model="gpt-4",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": tqa_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": tqa_true_prompt_template(question, correct_answer, incorrect_answer, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     if "yes" in ans.lower():
         true_score = 1
     elif "no" in ans.lower():
@@ -324,21 +476,41 @@ def tqa_mini_eval_true(question, correct_answer, incorrect_answer, model_answer)
     return true_score   
 
 def tqa_mini_eval_info(question, model_answer):
-    completion = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
+    
+    messages=[
             {"role": "system", "content": "You are a helpful assistant."},
             {
                 "role": "user",
                 "content": info_prompt_template(question, model_answer)
             }
-        ],
-        max_tokens=10,
-        temperature=0.001,
-        top_p=0.001,
-        seed=42,
-    )
-    ans = completion.choices[0].message.content
+        ]
+    
+    data = { 
+    "model": "gpt-4", # "gpt-3.5-turbo" version in gpt-3.5-turbo-1106, "gpt-4" version in gpt-4-1106-version (gpt-4-vision-preview is NOT available in azure openai), "gpt-3.5-turbo-16k", "gpt-4-32k"
+    "messages": messages, 
+    "temperature": 0.001,
+    "top_p": 0.001,
+    "max_tokens": 10,
+    "seed": 42 
+    }
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    ans= response.json()['choices'][0]['message']['content']
+    
+    # completion = client.chat.completions.create(
+    #     model="gpt-4o-mini",
+    #     messages=[
+    #         {"role": "system", "content": "You are a helpful assistant."},
+    #         {
+    #             "role": "user",
+    #             "content": info_prompt_template(question, model_answer)
+    #         }
+    #     ],
+    #     max_tokens=10,
+    #     temperature=0.001,
+    #     top_p=0.001,
+    #     seed=42,
+    # )
+    # ans = completion.choices[0].message.content
     
     if "yes" in ans.lower():
         info_score = 1
