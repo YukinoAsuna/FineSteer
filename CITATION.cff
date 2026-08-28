@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: FineSteer
+message: "If you use FineSteer, please cite the ACL 2026 paper."
+type: software
+version: 0.1.0
+date-released: 2026-08-28
+license: MIT
+repository-code: "https://github.com/YukinoAsuna/FineSteer"
+preferred-citation:
+  type: conference-paper
+  title: "FineSteer: A Unified Framework for Fine-Grained Inference-Time Steering in Large Language Models"
+  authors:
+    - family-names: Weng
+      given-names: Zixuan
+    - family-names: Zhang
+      given-names: Jinghuai
+    - family-names: Cai
+      given-names: Kunlin
+    - family-names: Li
+      given-names: Ying
+    - family-names: Wang
+      given-names: Peiran
+    - family-names: Tian
+      given-names: Yuan
+  collection-title: "Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)"
+  start: 18736
+  end: 18756
+  year: 2026
+  url: "https://aclanthology.org/2026.acl-long.852.pdf"

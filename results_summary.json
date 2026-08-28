@@ -1,0 +1,28 @@
+{
+  "judge_model": "gpt-5.6-luna",
+  "screen_count": 64,
+  "winner": {
+    "base_model": "Llama-3.1-8B-Instruct",
+    "variant": "MoSE",
+    "layer": 12,
+    "residual_dim": 10,
+    "num_experts": 4,
+    "strength": 2.5,
+    "screen_truthful_count": 47,
+    "screen_truthful_rate": 0.734375,
+    "full_count": 409,
+    "full_truthful_count": 298,
+    "full_truthful_rate": 0.728606356968215
+  },
+  "variant_screen": {
+    "llama31": {
+      "MoSE": 0.734375,
+      "orthogonal_residual": 0.703125
+    },
+    "qwen25": {
+      "MoSE": 0.640625,
+      "orthogonal_residual": 0.6875
+    }
+  },
+  "llama31_MoSE_strength_sweep": {"1.5": 0.59375, "2.0": 0.671875, "2.5": 0.734375, "3.0": 0.671875, "3.5": 0.6875}
+}
